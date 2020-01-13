@@ -1,2 +1,52 @@
 Sample git project
 New Line Added To Check Push And Pull
+
+
+
+bitbucket_user=$1
+bitbucket_password=$2
+
+working_dir=$(pwd)
+
+for i in "${project_list[@]}"
+do
+	projectName=$i
+	if [ -d "../$projectName" ]
+	then
+		echo "Project $projectName Directory Exists"
+	else
+		echo "Project $projectName Directory Does not exist.Cloning $projectName"
+		cd ../
+		#git clone https://$bitbucket_user:$bitbucket_password@bitbucket.org/capsilonengineering/$projectName.git
+		git clone https://$bitbucket_user:$bitbucket_password@bitbucket.org/capsilonengineering/$projectName.git 
+		cd $working_dir
+		
+	fi
+	
+		# Get current branch and checkout if needed
+	branch=$(git symbolic-ref --short -q HEAD)
+	if [ "$branch" != "release-19.12.1.0" ]; then
+		git checkout release-19.12.1.0
+	fi
+		
+	# Ensure working directory in version branch clean
+	git update-index -q --refresh
+	
+	if ! git diff-index --quiet HEAD --; then
+		echo "Working directory not clean, please commit your changes first"
+		git reset HEAD --hard
+	fi
+	
+	
+	
+	echo "Creating release branch version $version for $projectName"
+	cd ../$projectName
+	echo "Starting release for version $version"
+	echo "-------------------------------------------------------------------------"
+	
+	
+	
+	
+	git checkout master
+	git push origin --delete support-20.1.1
+done
